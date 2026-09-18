@@ -19,37 +19,39 @@ function journalDoc(name, classHtml, brHtml) {
   const id = idFor("journal", name);
   const p1 = idFor("page", name + ":class");
   const p2 = idFor("page", name + ":br");
+
+  const makePage = (pageId, pageName, sort, content) => ({
+    _id: pageId,
+    image: {},
+    name: pageName,
+    sort,
+    src: null,
+    system: {},
+    text: {
+      content,
+      format: 1
+    },
+    title: {
+      level: 1,
+      show: true
+    },
+    type: "text",
+    video: {
+      controls: true,
+      volume: 0.5
+    }
+  });
+
   return {
-    name,
     _id: id,
+    name,
+    ownership: { default: 0 },
     pages: [
-      {
-        name: "Class",
-        type: "text",
-        _id: p1,
-        sort: 100000,
-        title: { show: true, level: 1 },
-        text: { format: 1, content: classHtml },
-        ownership: { default: 0 },
-        flags: {},
-        _key: "!journal.pages!" + p1
-      },
-      {
-        name: "Birthright & S&W",
-        type: "text",
-        _id: p2,
-        sort: 200000,
-        title: { show: true, level: 1 },
-        text: { format: 1, content: brHtml },
-        ownership: { default: 0 },
-        flags: {},
-        _key: "!journal.pages!" + p2
-      }
+      makePage(p1, "Class", 100000, classHtml),
+      makePage(p2, "Birthright & S&W", 200000, brHtml)
     ],
     sort: 0,
-    ownership: { default: 0 },
-    flags: { [MODULE_ID]: { expandedClass: name } },
-    _key: "!journal!" + id
+    flags: { [MODULE_ID]: { expandedClass: name } }
   };
 }
 
