@@ -124,7 +124,8 @@ const journalsDir = path.join(OUT, "journals");
 const featuresDir = path.join(OUT, "features");
 const powersDir = path.join(OUT, "powers");
 
-const compressed = fs.readFileSync("data/experimental-classes.json.gz");
+const b64 = Array.from({ length: 9 }, (_, i) => fs.readFileSync(`data/chunks/${String(i).padStart(2, "0")}.txt`, "utf8").trim()).join("");
+const compressed = Buffer.from(b64, "base64");
 const experimental = JSON.parse(zlib.gunzipSync(compressed).toString("utf8"));
 
 for (const c of experimental) {
