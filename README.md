@@ -1,6 +1,6 @@
 # My Birthright Classes
 
-A Foundry VTT module for **Swords & Wizardry** containing expanded character classes adapted for a Birthright campaign.
+A Foundry VTT module for **Swords & Wizardry** containing expanded character classes adapted for a Birthright campaign.\n\n## Character Sheet Bloodline Panel\n\nCharacter sheets gain a compact Birthright bloodline section with:\n\n- Blooded toggle\n- Derivation: Anduiras, Basaïa, Brenna, Masela, Reynir, Vorynn, or Azrai\n- Strength: Tainted, Minor, Major, Great, or True\n- Numeric bloodline score\n\nFor example: **Brenna · Major · 33**. Bloodline data is stored on the Actor in module flags and does not modify the S&W system schema.
 
 ## Compendiums
 
