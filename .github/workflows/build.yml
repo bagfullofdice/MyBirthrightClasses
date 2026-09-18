@@ -1,0 +1,58 @@
+name: Build Foundry Content
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "scripts/build-content.mjs"
+      - "module.json"
+      - "README.md"
+      - ".github/workflows/build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Foundry CLI
+        run: npm install -g @foundryvtt/foundryvtt-cli
+
+      - name: Generate source documents
+        run: node scripts/build-content.mjs
+
+      - name: Compile compendiums
+        run: |
+          rm -rf packs/expanded-classes packs/expanded-class-features packs/mystic-powers
+          mkdir -p packs
+          fvtt package pack -n "expanded-classes" --in "build/journals" --out "packs"
+          fvtt package pack -n "expanded-class-features" --in "build/features" --out "packs"
+          fvtt package pack -n "mystic-powers" --in "build/powers" --out "packs"
+
+      - name: Build install ZIP
+        run: |
+          rm -rf dist package
+          mkdir -p dist package/my-birthright-classes
+          cp module.json README.md package/my-birthright-classes/
+          cp -R packs package/my-birthright-classes/
+          cd package
+          zip -qr "../dist/my-birthright-classes-v0.1.0.zip" my-birthright-classes
+
+      - name: Commit built packs and package
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packs dist
+          if ! git diff --cached --quiet; then
+            git commit -m "Build v0.1.0 compendiums and install package [skip ci]"
+            git push
+          fi
