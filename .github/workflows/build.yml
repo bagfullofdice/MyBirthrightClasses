@@ -46,7 +46,7 @@ jobs:
           cp module.json README.md package/my-birthright-classes/
           cp -R packs scripts styles package/my-birthright-classes/
           cd package
-          zip -qr "../dist/my-birthright-classes-v0.1.2.zip" my-birthright-classes
+          zip -qr "../dist/my-birthright-classes-v0.1.3.zip" my-birthright-classes
 
       - name: Commit built packs and package
         run: |
@@ -54,6 +54,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add packs dist
           if ! git diff --cached --quiet; then
-            git commit -m "Build v0.1.2 compendiums and install package [skip ci]"
+            git commit -m "Build v0.1.3 compendiums and install package [skip ci]"
             git push
           fi
