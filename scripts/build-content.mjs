@@ -22,36 +22,34 @@ function journalDoc(name, classHtml, brHtml) {
 
   const makePage = (pageId, pageName, sort, content) => ({
     _id: pageId,
-    image: {},
     name: pageName,
-    sort,
-    src: null,
-    system: {},
-    text: {
-      content,
-      format: 1
-    },
-    title: {
-      level: 1,
-      show: true
-    },
     type: "text",
-    video: {
-      controls: true,
-      volume: 0.5
-    }
+    system: {},
+    title: { show: true, level: 1 },
+    image: {},
+    text: { content, format: 1 },
+    video: { controls: true, volume: 0.5 },
+    src: null,
+    category: null,
+    sort,
+    ownership: { default: -1 },
+    flags: {},
+    _key: `!journal.pages!${id}.${pageId}`
   });
 
   return {
     _id: id,
     name,
-    ownership: { default: 0 },
     pages: [
       makePage(p1, "Class", 100000, classHtml),
       makePage(p2, "Birthright & S&W", 200000, brHtml)
     ],
+    folder: null,
+    categories: [],
     sort: 0,
-    flags: { [MODULE_ID]: { expandedClass: name } }
+    ownership: { default: 0 },
+    flags: { [MODULE_ID]: { expandedClass: name } },
+    _key: `!journal!${id}`
   };
 }
 
