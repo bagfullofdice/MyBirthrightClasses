@@ -1,0 +1,53 @@
+{
+  "id": "my-birthright-classes",
+  "title": "My Birthright Classes",
+  "description": "Expanded Swords & Wizardry classes for a Birthright campaign, including player-facing class journals, class feature Items, and Mystic psionic powers.",
+  "version": "0.1.0",
+  "authors": [
+    { "name": "Phil Carr / ChatGPT" }
+  ],
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14.367"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "swords-wizardry",
+        "type": "system",
+        "compatibility": {
+          "minimum": "4.2.0",
+          "verified": "4.2.1"
+        }
+      }
+    ]
+  },
+  "packs": [
+    {
+      "name": "expanded-classes",
+      "label": "Expanded Classes",
+      "path": "packs/expanded-classes",
+      "type": "JournalEntry",
+      "system": "swords-wizardry",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "expanded-class-features",
+      "label": "Expanded Class Features",
+      "path": "packs/expanded-class-features",
+      "type": "Item",
+      "system": "swords-wizardry",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "mystic-powers",
+      "label": "Mystic Psionic Powers",
+      "path": "packs/mystic-powers",
+      "type": "Item",
+      "system": "swords-wizardry",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    }
+  ],
+  "manifest": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/module.json",
+  "download": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/dist/my-birthright-classes-v0.1.0.zip"
+}
