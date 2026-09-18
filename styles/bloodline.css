@@ -1,0 +1,86 @@
+.mbrc-bloodline {
+  margin: 6px 0;
+  padding: 7px 9px;
+  border: 1px solid var(--color-border-light-2, #8a8173);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  flex: 1 1 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mbrc-bloodline-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.mbrc-bloodline-icon {
+  font-size: 0.85rem;
+}
+
+.mbrc-blooded-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.mbrc-bloodline-fields {
+  display: grid;
+  grid-template-columns: minmax(105px, 1fr) minmax(90px, 1fr) 72px minmax(130px, 1.25fr);
+  gap: 6px;
+  align-items: end;
+}
+
+.mbrc-bloodline-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+}
+
+.mbrc-bloodline-fields label > span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.mbrc-bloodline-fields select,
+.mbrc-bloodline-fields input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+}
+
+.mbrc-bloodline-summary {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  border-left: 2px solid var(--color-border-light-2, #8a8173);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mbrc-bloodline-disabled > label,
+.mbrc-bloodline-disabled > .mbrc-bloodline-summary {
+  opacity: 0.45;
+}
+
+.mbrc-bloodline-disabled select,
+.mbrc-bloodline-disabled input {
+  pointer-events: none;
+}
+
+@media (max-width: 650px) {
+  .mbrc-bloodline-fields {
+    grid-template-columns: 1fr 1fr 72px;
+  }
+
+  .mbrc-bloodline-summary {
+    grid-column: 1 / -1;
+  }
+}
