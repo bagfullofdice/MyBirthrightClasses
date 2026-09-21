@@ -27,8 +27,7 @@ function setCollapsed(actor, collapsed) {
 function getRoot(html) {
   if (!html) return null;
   if (html instanceof HTMLElement) return html;
-  if (html?.element instanceof HTMLElement) return html.element;
-  if (html?.[0] instanceof HTMLElement) return html[0];
+  if (html[0] instanceof HTMLElement) return html[0];
   return null;
 }
 
@@ -111,20 +110,23 @@ function makeBloodlinePanel(actor, data) {
 
 function findInsertionTarget(root) {
   const selectors = [
-    ".sheet-header .header-fields",
     ".sheet-header",
     "header.sheet-header",
-    ".character-details",
-    ".sheet-body",
-    "section.character",
-    "form"
+    ".sheet-body"
   ];
 
   for (const sel of selectors) {
-    const target = root.matches?.(sel) ? root : root.querySelector(sel);
-    if (target) return target;
+    const target = root.querySelector(sel);
+    if (target) return { target, position: target.classList?.contains("sheet-body") ? "prepend" : "after" };
   }
-  return root;
+  return { target: root, position: "prepend" };
+}
+
+function insertPanel(panel, insertion) {
+  const { target, position } = insertion;
+  if (position === "after") target.insertAdjacentElement("afterend", panel);
+  else if (position === "prepend") target.prepend(panel);
+  else target.append(panel);
 }
 
 async function wireBloodlinePanel(panel, actor) {
@@ -171,34 +173,16 @@ async function wireBloodlinePanel(panel, actor) {
 }
 
 async function injectBloodline(app, html) {
-  const actor = app?.actor ?? app?.document ?? app?.object;
+  const actor = app?.actor ?? app?.document;
   if (!actor || actor.documentName !== "Actor" || actor.type !== "character") return;
   if (game.system.id !== "swords-wizardry") return;
 
-  // Foundry ApplicationV2 supplies an HTMLElement. Legacy hooks may supply jQuery.
-  // If a part element is supplied, fall back to the application's root element.
-  let root = getRoot(html);
-  if (!root?.querySelector?.(".sheet-header")) {
-    root = app?.element instanceof HTMLElement
-      ? app.element
-      : getRoot(app?.element);
-  }
-  if (!root) return;
-
-  if (root.querySelector(".mbrc-bloodline")) return;
-
-  const header = root.querySelector(".sheet-header");
-  if (!header) {
-    console.warn(`${MODULE_ID} | Could not locate .sheet-header on S&W character sheet`, { app, root });
-    return;
-  }
+  const root = getRoot(html);
+  if (!root || root.querySelector(".mbrc-bloodline")) return;
 
   const data = getBloodline(actor);
   const panel = makeBloodlinePanel(actor, data);
-
-  // Place directly beneath the S&W identity header and above Alignment/Age/Deity.
-  header.insertAdjacentElement("afterend", panel);
-
+  insertPanel(panel, findInsertionTarget(root));
   await wireBloodlinePanel(panel, actor);
 }
 
@@ -209,14 +193,5 @@ Hooks.once("init", () => {
 // Foundry V14 / S&W 4.2.x uses ActorSheetV2 with the concrete
 // SwordsWizardryActorSheet class. Register both generic V2 hooks and the
 // class-specific hook so the panel survives sheet/render-hook changes.
-Hooks.on("renderActorSheetV2", injectBloodline);
-Hooks.on("renderSwordsWizardryActorSheet", injectBloodline);
-Hooks.on("renderApplicationV2", (app, element) => {
-  const actor = app?.actor ?? app?.document;
-  if (actor?.documentName === "Actor" && actor.type === "character") {
-    injectBloodline(app, element);
-  }
-});
-
-// Keep the legacy hook for compatibility with alternate/older sheets.
 Hooks.on("renderActorSheet", injectBloodline);
+Hooks.on("renderActorSheetV2", injectBloodline);
