@@ -56,7 +56,7 @@ function makeBloodlinePanel(actor, data) {
 
   const collapsed = isCollapsed(actor);
 
-  section.classList.toggle("mbrc-collapsed", collapsed);
+  section.classList.toggle("mbrc-bloodline-collapsed", collapsed);
 
   section.innerHTML = `
     <div class="mbrc-bloodline-title">
@@ -134,9 +134,9 @@ async function wireBloodlinePanel(panel, actor) {
     const body = panel.querySelector(".mbrc-bloodline-body");
     const toggle = panel.querySelector(".mbrc-collapse-toggle");
     const chevron = panel.querySelector(".mbrc-chevron");
-    const collapsed = !panel.classList.contains("mbrc-collapsed");
+    const collapsed = !panel.classList.contains("mbrc-bloodline-collapsed");
 
-    panel.classList.toggle("mbrc-collapsed", collapsed);
+    panel.classList.toggle("mbrc-bloodline-collapsed", collapsed);
     body?.classList.toggle("mbrc-hidden", collapsed);
     setCollapsed(actor, collapsed);
 
