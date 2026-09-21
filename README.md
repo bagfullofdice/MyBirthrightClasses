@@ -1,6 +1,34 @@
 # My Birthright Classes
 
-A Foundry VTT module for **Swords & Wizardry** containing expanded character classes adapted for a Birthright campaign.\n\n## Character Sheet Bloodline Panel\n\nCharacter sheets gain a compact Birthright bloodline section with:\n\n- Blooded toggle\n- Derivation: Anduiras, Basaïa, Brenna, Masela, Reynir, Vorynn, or Azrai\n- Strength: Tainted, Minor, Major, Great, or True\n- Numeric bloodline score\n\nFor example: **Brenna · Major · 33**. Bloodline data is stored on the Actor in module flags and does not modify the S&W system schema.
+A Foundry VTT module for **Swords & Wizardry** containing expanded character classes adapted for a Birthright campaign.
+
+## Character Sheet Bloodline Panel
+
+Character sheets gain a compact Birthright bloodline section with:
+
+- Blooded toggle
+- Derivation: Anduiras, Basaïa, Brenna, Masela, Reynir, Vorynn, or Azrai
+- Strength: Tainted, Minor, Major, Great, or True
+- Numeric bloodline score
+
+For example: **Brenna · Major · 33**. Bloodline data is stored on the Actor in module flags and does not modify the S&W system schema.
+
+## Multi-Class and Dual-Class Progression
+
+The module adds a **Class Progression** panel to S&W character sheets without modifying the S&W Actor schema.
+
+The panel supports:
+
+- Multi-Class mode for concurrent classes
+- Dual-Class mode for former and current classes
+- Individual class name, level, XP, XP bonus, and status
+- Shared XP tracking for Multi-Class characters
+- Automatic synchronization to the standard S&W Class, Level, XP, and XP Bonus fields
+- Module-flag storage so system updates do not overwrite the progression data
+
+When Dual-Class mode is used, only one class is treated as the current active class; other class entries are retained as former classes.
+
+This is the foundation layer. Automatic S&W advancement tables, best saving throw/attack calculation, spell progression, XP distribution, and campaign-specific HP automation are planned as later steps.
 
 ## Compendiums
 
@@ -44,4 +72,4 @@ Manifest URL:
 
 ## Status
 
-These classes are campaign material and should be treated as experimental until tested in play.
+These classes and character-sheet extensions are campaign material and should be treated as experimental until tested in play.
