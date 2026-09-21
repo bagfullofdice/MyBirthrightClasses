@@ -131,23 +131,33 @@ function displayLevel(data) {
 }
 
 async function syncCompatibilityFields(actor, data) {
-  const active = getActiveClasses(data)[0] ?? data.classes[0];
+  const activeClasses = getActiveClasses(data);
+  const current = activeClasses[0] ?? data.classes[0];
+
+  // S&W 4.2.x defines level/xp as StringFields, but its character-sheet
+  // inputs use data-dtype="Number". Foundry therefore coerces those fields
+  // numerically on submission. Composite values such as "3 / 2" become NaN.
+  // Keep the stock fields numeric-only and use this module's panel for the
+  // real per-class display.
   const update = {
-    "system.class": displayClassName(data),
-    "system.level.value": displayLevel(data)
+    "system.class": displayClassName(data)
   };
 
   if (data.mode === "multiclass") {
+    const levels = activeClasses.map(c => Math.max(0, asNumber(c.level, 0)));
+    const compatibilityLevel = levels.length ? Math.max(...levels) : 0;
+
+    update["system.level.value"] = String(compatibilityLevel);
     update["system.xp.value"] = String(Math.max(0, asNumber(data.sharedXp, 0)));
-    if (data.classes.length) {
-      const bonuses = data.classes.filter(c => c.status !== "former").map(c => asNumber(c.xpBonus, 0));
-      if (bonuses.length && bonuses.every(v => v === bonuses[0])) {
-        update["system.xpBonus.value"] = String(bonuses[0]);
-      }
+
+    const bonuses = activeClasses.map(c => asNumber(c.xpBonus, 0));
+    if (bonuses.length && bonuses.every(v => v === bonuses[0])) {
+      update["system.xpBonus.value"] = String(bonuses[0]);
     }
-  } else if (active) {
-    update["system.xp.value"] = String(Math.max(0, asNumber(active.xp, 0)));
-    update["system.xpBonus.value"] = String(asNumber(active.xpBonus, 0));
+  } else if (current) {
+    update["system.level.value"] = String(Math.max(0, asNumber(current.level, 0)));
+    update["system.xp.value"] = String(Math.max(0, asNumber(current.xp, 0)));
+    update["system.xpBonus.value"] = String(asNumber(current.xpBonus, 0));
   }
 
   await actor.update(update);
