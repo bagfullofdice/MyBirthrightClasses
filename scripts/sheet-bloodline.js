@@ -171,33 +171,33 @@ async function wireBloodlinePanel(panel, actor) {
 }
 
 async function injectBloodline(app, html) {
-  const actor = app?.actor ?? app?.document;
+  const actor = app?.actor ?? app?.document ?? app?.object;
   if (!actor || actor.documentName !== "Actor" || actor.type !== "character") return;
   if (game.system.id !== "swords-wizardry") return;
 
-  const root = getRoot(html);
-  if (!root) {
-    console.debug(`${MODULE_ID} | Bloodline panel skipped: no rendered root element`, app);
-    return;
+  // Foundry ApplicationV2 supplies an HTMLElement. Legacy hooks may supply jQuery.
+  // If a part element is supplied, fall back to the application's root element.
+  let root = getRoot(html);
+  if (!root?.querySelector?.(".sheet-header")) {
+    root = app?.element instanceof HTMLElement
+      ? app.element
+      : getRoot(app?.element);
   }
+  if (!root) return;
 
   if (root.querySelector(".mbrc-bloodline")) return;
 
-  const data = getBloodline(actor);
-  const panel = makeBloodlinePanel(actor, data);
-  const target = findInsertionTarget(root);
-
-  if (!target) {
-    console.debug(`${MODULE_ID} | Bloodline panel skipped: no insertion target`, root);
+  const header = root.querySelector(".sheet-header");
+  if (!header) {
+    console.warn(`${MODULE_ID} | Could not locate .sheet-header on S&W character sheet`, { app, root });
     return;
   }
 
-  // The S&W V14 sheet is an ApplicationV2 multi-part sheet. Put the compact
-  // Birthright row immediately after the character header when possible.
-  const header = root.querySelector(".sheet-header, header.sheet-header");
-  if (header?.parentElement) header.insertAdjacentElement("afterend", panel);
-  else if (target.classList?.contains("sheet-body")) target.prepend(panel);
-  else target.append(panel);
+  const data = getBloodline(actor);
+  const panel = makeBloodlinePanel(actor, data);
+
+  // Place directly beneath the S&W identity header and above Alignment/Age/Deity.
+  header.insertAdjacentElement("afterend", panel);
 
   await wireBloodlinePanel(panel, actor);
 }
