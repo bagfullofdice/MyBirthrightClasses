@@ -14,6 +14,51 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 6px;
+  min-height: 28px;
+}
+
+.mbrc-collapsed .mbrc-bloodline-title {
+  margin-bottom: 0;
+}
+
+.mbrc-collapse-toggle {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mbrc-collapse-toggle:hover,
+.mbrc-collapse-toggle:focus {
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+}
+
+.mbrc-chevron {
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.mbrc-header-summary {
+  margin-left: 4px;
+  opacity: 0.78;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mbrc-hidden {
+  display: none !important;
 }
 
 .mbrc-bloodline-icon {
@@ -30,7 +75,7 @@
 
 .mbrc-bloodline-fields {
   display: grid;
-  grid-template-columns: minmax(105px, 1fr) minmax(90px, 1fr) 72px minmax(130px, 1.25fr);
+  grid-template-columns: minmax(105px, 1fr) minmax(90px, 1fr) 72px;
   gap: 6px;
   align-items: end;
 }
@@ -65,8 +110,7 @@
   white-space: nowrap;
 }
 
-.mbrc-bloodline-disabled > label,
-.mbrc-bloodline-disabled > .mbrc-bloodline-summary {
+.mbrc-bloodline-disabled > label {
   opacity: 0.45;
 }
 
@@ -80,7 +124,4 @@
     grid-template-columns: 1fr 1fr 72px;
   }
 
-  .mbrc-bloodline-summary {
-    grid-column: 1 / -1;
-  }
 }
