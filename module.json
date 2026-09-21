@@ -1,12 +1,10 @@
 {
   "id": "my-birthright-classes",
   "title": "My Birthright Classes",
-  "description": "Expanded Swords & Wizardry classes for a Birthright campaign, including player-facing class journals, class feature Items, Mystic psionic powers, Birthright bloodline fields, and multi-class/dual-class character progression support.",
-  "version": "0.2.0",
+  "description": "Expanded Swords & Wizardry classes for a Birthright campaign, including player-facing class journals, class feature Items, Mystic psionic powers, and Birthright bloodline fields on character sheets.",
+  "version": "0.1.3",
   "authors": [
-    {
-      "name": "Phil Carr / ChatGPT"
-    }
+    { "name": "Phil Carr / ChatGPT" }
   ],
   "compatibility": {
     "minimum": "14",
@@ -31,10 +29,7 @@
       "path": "packs/expanded-classes",
       "type": "JournalEntry",
       "system": "swords-wizardry",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      }
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     },
     {
       "name": "expanded-class-features",
@@ -42,10 +37,7 @@
       "path": "packs/expanded-class-features",
       "type": "Item",
       "system": "swords-wizardry",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      }
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     },
     {
       "name": "mystic-powers",
@@ -53,20 +45,15 @@
       "path": "packs/mystic-powers",
       "type": "Item",
       "system": "swords-wizardry",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      }
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     }
   ],
   "esmodules": [
-    "scripts/sheet-bloodline.js",
-    "scripts/multiclass.js"
+    "scripts/sheet-bloodline.js"
   ],
   "styles": [
-    "styles/bloodline.css",
-    "styles/multiclass.css"
+    "styles/bloodline.css"
   ],
   "manifest": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/module.json",
-  "download": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/dist/my-birthright-classes-v0.2.0.zip"
+  "download": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/dist/my-birthright-classes-v0.1.3.zip"
 }
