@@ -27,7 +27,8 @@ function setCollapsed(actor, collapsed) {
 function getRoot(html) {
   if (!html) return null;
   if (html instanceof HTMLElement) return html;
-  if (html[0] instanceof HTMLElement) return html[0];
+  if (html?.element instanceof HTMLElement) return html.element;
+  if (html?.[0] instanceof HTMLElement) return html[0];
   return null;
 }
 
@@ -110,15 +111,17 @@ function makeBloodlinePanel(actor, data) {
 
 function findInsertionTarget(root) {
   const selectors = [
-    ".sheet-header .header-details",
+    ".sheet-header .header-fields",
     ".sheet-header",
     "header.sheet-header",
     ".character-details",
-    ".sheet-body"
+    ".sheet-body",
+    "section.character",
+    "form"
   ];
 
   for (const sel of selectors) {
-    const target = root.querySelector(sel);
+    const target = root.matches?.(sel) ? root : root.querySelector(sel);
     if (target) return target;
   }
   return root;
@@ -173,13 +176,27 @@ async function injectBloodline(app, html) {
   if (game.system.id !== "swords-wizardry") return;
 
   const root = getRoot(html);
-  if (!root || root.querySelector(".mbrc-bloodline")) return;
+  if (!root) {
+    console.debug(`${MODULE_ID} | Bloodline panel skipped: no rendered root element`, app);
+    return;
+  }
+
+  if (root.querySelector(".mbrc-bloodline")) return;
 
   const data = getBloodline(actor);
   const panel = makeBloodlinePanel(actor, data);
   const target = findInsertionTarget(root);
 
-  if (target.classList?.contains("sheet-body")) target.prepend(panel);
+  if (!target) {
+    console.debug(`${MODULE_ID} | Bloodline panel skipped: no insertion target`, root);
+    return;
+  }
+
+  // The S&W V14 sheet is an ApplicationV2 multi-part sheet. Put the compact
+  // Birthright row immediately after the character header when possible.
+  const header = root.querySelector(".sheet-header, header.sheet-header");
+  if (header?.parentElement) header.insertAdjacentElement("afterend", panel);
+  else if (target.classList?.contains("sheet-body")) target.prepend(panel);
   else target.append(panel);
 
   await wireBloodlinePanel(panel, actor);
@@ -189,5 +206,17 @@ Hooks.once("init", () => {
   console.log(`${MODULE_ID} | Initializing Birthright character sheet additions`);
 });
 
-Hooks.on("renderActorSheet", injectBloodline);
+// Foundry V14 / S&W 4.2.x uses ActorSheetV2 with the concrete
+// SwordsWizardryActorSheet class. Register both generic V2 hooks and the
+// class-specific hook so the panel survives sheet/render-hook changes.
 Hooks.on("renderActorSheetV2", injectBloodline);
+Hooks.on("renderSwordsWizardryActorSheet", injectBloodline);
+Hooks.on("renderApplicationV2", (app, element) => {
+  const actor = app?.actor ?? app?.document;
+  if (actor?.documentName === "Actor" && actor.type === "character") {
+    injectBloodline(app, element);
+  }
+});
+
+// Keep the legacy hook for compatibility with alternate/older sheets.
+Hooks.on("renderActorSheet", injectBloodline);
