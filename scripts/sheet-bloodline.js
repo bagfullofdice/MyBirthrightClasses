@@ -11,6 +11,19 @@ const DEFAULTS = {
 const DERIVATIONS = ["Anduiras", "Basaïa", "Brenna", "Masela", "Reynir", "Vorynn", "Azrai"];
 const STRENGTHS = ["Tainted", "Minor", "Major", "Great", "True"];
 
+function collapseKey(actor) {
+  return `${MODULE_ID}.bloodlineCollapsed.${actor.id}`;
+}
+
+function isCollapsed(actor) {
+  const stored = sessionStorage.getItem(collapseKey(actor));
+  return stored === null ? true : stored === "true";
+}
+
+function setCollapsed(actor, collapsed) {
+  sessionStorage.setItem(collapseKey(actor), String(collapsed));
+}
+
 function getRoot(html) {
   if (!html) return null;
   if (html instanceof HTMLElement) return html;
@@ -41,38 +54,53 @@ function makeBloodlinePanel(actor, data) {
   section.className = "mbrc-bloodline";
   section.dataset.mbrcBloodlineActor = actor.id;
 
+  const collapsed = isCollapsed(actor);
+
+  section.classList.toggle("mbrc-collapsed", collapsed);
+
   section.innerHTML = `
     <div class="mbrc-bloodline-title">
+      <button type="button"
+              class="mbrc-collapse-toggle"
+              data-mbrc-action="toggle-collapse"
+              aria-expanded="${collapsed ? "false" : "true"}"
+              title="${collapsed ? "Expand bloodline details" : "Collapse bloodline details"}">
+        <span class="mbrc-chevron">${collapsed ? "▶" : "▼"}</span>
+      </button>
+
       <span class="mbrc-bloodline-icon">◆</span>
       <strong>Birthright Bloodline</strong>
+
+      <span class="mbrc-header-summary">
+        ${data.blooded ? `${data.derivation} · ${data.strength} · ${Number(data.score) || 0}` : "Unblooded"}
+      </span>
+
       <label class="mbrc-blooded-toggle">
         <input type="checkbox" data-mbrc-field="blooded" ${data.blooded ? "checked" : ""}>
         <span>Blooded</span>
       </label>
     </div>
 
-    <div class="mbrc-bloodline-fields ${data.blooded ? "" : "mbrc-bloodline-disabled"}">
-      <label>
-        <span>Derivation</span>
-        <select data-mbrc-field="derivation">
-          ${selectOptions(DERIVATIONS, data.derivation)}
-        </select>
-      </label>
+    <div class="mbrc-bloodline-body ${collapsed ? "mbrc-hidden" : ""}">
+      <div class="mbrc-bloodline-fields ${data.blooded ? "" : "mbrc-bloodline-disabled"}">
+        <label>
+          <span>Derivation</span>
+          <select data-mbrc-field="derivation">
+            ${selectOptions(DERIVATIONS, data.derivation)}
+          </select>
+        </label>
 
-      <label>
-        <span>Strength</span>
-        <select data-mbrc-field="strength">
-          ${selectOptions(STRENGTHS, data.strength)}
-        </select>
-      </label>
+        <label>
+          <span>Strength</span>
+          <select data-mbrc-field="strength">
+            ${selectOptions(STRENGTHS, data.strength)}
+          </select>
+        </label>
 
-      <label class="mbrc-score-field">
-        <span>Score</span>
-        <input type="number" min="0" step="1" data-mbrc-field="score" value="${Number(data.score) || 0}">
-      </label>
-
-      <div class="mbrc-bloodline-summary" title="Bloodline summary">
-        ${data.blooded ? `${data.derivation} · ${data.strength} · ${Number(data.score) || 0}` : "Unblooded"}
+        <label class="mbrc-score-field">
+          <span>Score</span>
+          <input type="number" min="0" step="1" data-mbrc-field="score" value="${Number(data.score) || 0}">
+        </label>
       </div>
     </div>
   `;
@@ -97,6 +125,23 @@ function findInsertionTarget(root) {
 }
 
 async function wireBloodlinePanel(panel, actor) {
+  panel.querySelector('[data-mbrc-action="toggle-collapse"]')?.addEventListener("click", () => {
+    const body = panel.querySelector(".mbrc-bloodline-body");
+    const toggle = panel.querySelector(".mbrc-collapse-toggle");
+    const chevron = panel.querySelector(".mbrc-chevron");
+    const collapsed = !panel.classList.contains("mbrc-collapsed");
+
+    panel.classList.toggle("mbrc-collapsed", collapsed);
+    body?.classList.toggle("mbrc-hidden", collapsed);
+    setCollapsed(actor, collapsed);
+
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", String(!collapsed));
+      toggle.title = collapsed ? "Expand bloodline details" : "Collapse bloodline details";
+    }
+    if (chevron) chevron.textContent = collapsed ? "▶" : "▼";
+  });
+
   panel.querySelectorAll("[data-mbrc-field]").forEach(input => {
     input.addEventListener("change", async () => {
       const data = getBloodline(actor);
@@ -112,7 +157,7 @@ async function wireBloodlinePanel(panel, actor) {
         panel.querySelector(".mbrc-bloodline-fields")?.classList.toggle("mbrc-bloodline-disabled", !data.blooded);
       }
 
-      const summary = panel.querySelector(".mbrc-bloodline-summary");
+      const summary = panel.querySelector(".mbrc-header-summary");
       if (summary) {
         summary.textContent = data.blooded
           ? `${data.derivation} · ${data.strength} · ${data.score}`
