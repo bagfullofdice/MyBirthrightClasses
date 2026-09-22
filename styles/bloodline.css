@@ -65,12 +65,20 @@
   font-size: 0.85rem;
 }
 
+.mbrc-regent-toggle,
 .mbrc-blooded-toggle {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 4px;
   white-space: nowrap;
+}
+
+.mbrc-regent-toggle {
+  margin-left: auto;
+}
+
+.mbrc-blooded-toggle {
+  margin-left: 4px;
 }
 
 .mbrc-bloodline-fields {
