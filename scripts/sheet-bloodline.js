@@ -136,22 +136,32 @@ function insertPanel(panel, insertion) {
   else target.append(panel);
 }
 
-async function applyRegentHpBonus(actor, data, enable) {
+async function saveRegentState(actor, data, enable) {
   const maxHp = Number(foundry.utils.getProperty(actor, "system.hp.max"));
   if (!Number.isFinite(maxHp)) {
     ui.notifications?.warn("Could not adjust Regent HP bonus: actor.system.hp.max is not numeric.");
-    return data;
+    return false;
   }
 
+  data.regent = enable;
+
+  let nextMax = maxHp;
   if (enable && !data.regentHpApplied) {
-    await actor.update({ "system.hp.max": maxHp + 10 });
+    nextMax = maxHp + 10;
     data.regentHpApplied = true;
   } else if (!enable && data.regentHpApplied) {
-    await actor.update({ "system.hp.max": Math.max(0, maxHp - 10) });
+    nextMax = Math.max(0, maxHp - 10);
     data.regentHpApplied = false;
   }
 
-  return data;
+  // Save the checkbox state and HP change in one Actor update. This prevents the
+  // HP update from rerendering the sheet before the Regent flag has been saved.
+  await actor.update({
+    "system.hp.max": nextMax,
+    [`flags.${MODULE_ID}.${FLAG_ROOT}`]: data
+  });
+
+  return true;
 }
 
 async function wireBloodlinePanel(panel, actor) {
@@ -179,16 +189,17 @@ async function wireBloodlinePanel(panel, actor) {
 
       if (field === "blooded") {
         data.blooded = input.checked;
+        await saveBloodline(actor, data);
       } else if (field === "regent") {
-        data.regent = input.checked;
-        data = await applyRegentHpBonus(actor, data, data.regent);
+        const saved = await saveRegentState(actor, data, input.checked);
+        if (!saved) input.checked = data.regent;
       } else if (field === "score") {
         data.score = Math.max(0, Number(input.value) || 0);
+        await saveBloodline(actor, data);
       } else {
         data[field] = input.value;
+        await saveBloodline(actor, data);
       }
-
-      await saveBloodline(actor, data);
 
       if (field === "blooded") {
         panel.querySelector(".mbrc-bloodline-fields")?.classList.toggle("mbrc-bloodline-disabled", !data.blooded);
