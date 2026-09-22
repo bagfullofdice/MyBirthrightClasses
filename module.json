@@ -2,7 +2,7 @@
   "id": "my-birthright-classes",
   "title": "S&W Birthright Classes",
   "description": "Expanded Swords & Wizardry classes for a Birthright campaign, including player-facing class journals, class feature Items, Mystic psionic powers, and Birthright bloodline fields on character sheets.",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "authors": [
     { "name": "Phil Carr / ChatGPT" }
   ],
@@ -55,5 +55,5 @@
     "styles/bloodline.css"
   ],
   "manifest": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/module.json",
-  "download": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/dist/my-birthright-classes-v0.1.9.zip"
+  "download": "https://raw.githubusercontent.com/bagfullofdice/MyBirthrightClasses/main/dist/my-birthright-classes-v0.1.10.zip"
 }
