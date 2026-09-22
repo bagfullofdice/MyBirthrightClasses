@@ -143,19 +143,23 @@ async function saveRegentState(actor, data, enable) {
     return false;
   }
 
-  data.regent = enable;
-
+  // Apply the HP bonus only when the Regent state actually changes.
+  // Using the previous checkbox state makes this safe even for actors created
+  // under older module versions where regentHpApplied may not have persisted.
+  const wasRegent = Boolean(data.regent);
   let nextMax = maxHp;
-  if (enable && !data.regentHpApplied) {
+
+  if (enable && !wasRegent) {
     nextMax = maxHp + 10;
-    data.regentHpApplied = true;
-  } else if (!enable && data.regentHpApplied) {
+  } else if (!enable && wasRegent) {
     nextMax = Math.max(0, maxHp - 10);
-    data.regentHpApplied = false;
   }
 
-  // Save the checkbox state and HP change in one Actor update. This prevents the
-  // HP update from rerendering the sheet before the Regent flag has been saved.
+  data.regent = enable;
+  data.regentHpApplied = enable;
+
+  // Save the checkbox state and HP change in one Actor update so a sheet
+  // rerender cannot occur between the HP adjustment and the flag update.
   await actor.update({
     "system.hp.max": nextMax,
     [`flags.${MODULE_ID}.${FLAG_ROOT}`]: data
