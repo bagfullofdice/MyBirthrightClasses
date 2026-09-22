@@ -3,6 +3,8 @@ const FLAG_ROOT = "bloodline";
 
 const DEFAULTS = {
   blooded: false,
+  regent: false,
+  regentHpApplied: false,
   derivation: "Brenna",
   strength: "Minor",
   score: 0
@@ -75,6 +77,11 @@ function makeBloodlinePanel(actor, data) {
         ${data.blooded ? `${data.derivation} · ${data.strength} · ${Number(data.score) || 0}` : "Unblooded"}
       </span>
 
+      <label class="mbrc-regent-toggle">
+        <input type="checkbox" data-mbrc-field="regent" ${data.regent ? "checked" : ""}>
+        <span>Regent</span>
+      </label>
+
       <label class="mbrc-blooded-toggle">
         <input type="checkbox" data-mbrc-field="blooded" ${data.blooded ? "checked" : ""}>
         <span>Blooded</span>
@@ -129,6 +136,24 @@ function insertPanel(panel, insertion) {
   else target.append(panel);
 }
 
+async function applyRegentHpBonus(actor, data, enable) {
+  const maxHp = Number(foundry.utils.getProperty(actor, "system.hp.max"));
+  if (!Number.isFinite(maxHp)) {
+    ui.notifications?.warn("Could not adjust Regent HP bonus: actor.system.hp.max is not numeric.");
+    return data;
+  }
+
+  if (enable && !data.regentHpApplied) {
+    await actor.update({ "system.hp.max": maxHp + 10 });
+    data.regentHpApplied = true;
+  } else if (!enable && data.regentHpApplied) {
+    await actor.update({ "system.hp.max": Math.max(0, maxHp - 10) });
+    data.regentHpApplied = false;
+  }
+
+  return data;
+}
+
 async function wireBloodlinePanel(panel, actor) {
   panel.querySelector('[data-mbrc-action="toggle-collapse"]')?.addEventListener("click", () => {
     const body = panel.querySelector(".mbrc-bloodline-body");
@@ -152,9 +177,16 @@ async function wireBloodlinePanel(panel, actor) {
       const data = getBloodline(actor);
       const field = input.dataset.mbrcField;
 
-      if (field === "blooded") data.blooded = input.checked;
-      else if (field === "score") data.score = Math.max(0, Number(input.value) || 0);
-      else data[field] = input.value;
+      if (field === "blooded") {
+        data.blooded = input.checked;
+      } else if (field === "regent") {
+        data.regent = input.checked;
+        data = await applyRegentHpBonus(actor, data, data.regent);
+      } else if (field === "score") {
+        data.score = Math.max(0, Number(input.value) || 0);
+      } else {
+        data[field] = input.value;
+      }
 
       await saveBloodline(actor, data);
 
